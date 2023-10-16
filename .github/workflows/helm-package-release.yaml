@@ -15,5 +15,7 @@ jobs:
 
       - name: Release Helm Package
         uses: helm/chart-releaser-action@v1.5.0
+        with:
+          charts_dir: deployment
         env:
           CR_TOKEN: "${{ secrets.GH_TOKEN }}"
