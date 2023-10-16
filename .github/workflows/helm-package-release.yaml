@@ -5,8 +5,7 @@ on:
 
 env:
     REGISTRY: ghcr.io
-    # github.repository as <account>/<repo>
-    PACKAGE_NAME: ${{ github.repository }}
+    REMOTE_DEST: oci://ghcr.io/${{ github.actor }}
 
 jobs:
   release-helm-artifacte:
@@ -18,15 +17,21 @@ jobs:
       - name: Set up Helm
         uses: azure/setup-helm@v3
 
+      - name: Set CHART_VERSION
+        run: echo "CHART_VERSION=$(grep 'version:' ./path/to/Chart.yaml | tail -n1 | awk '{ print $2 }')" >> $GITHUB_ENV
+  
+      - name: Test
+        run: echo ${{ env.CHART_VERSION }}
+
       - name: Login to Helm registry
         run: |
           helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password ${{ secrets.GH_TOKEN }}
 
       - name: save Helm package to local registry
         run: |
-          helm chart save ${{ github.workspace }}/deployment/ ${{ env.REGISTRY }}/${{ env.PACKAGE_NAME }}:${{ github.sha }}
+          helm package ${{ github.workspace }}/deployment
 
       - name: Upload Helm package to remote registry
         run: |
-          helm registry login ${{ env.REGISTRY }} --username ${{ github.actor }} --password ${{ secrets.GH_TOKEN }}
-          
+          helm push ${{ github.event.repository.name }}-${{ env.CHART_VERSION }}.tgz ${{ env.REMOTE_DEST }}
+ 
