@@ -12,6 +12,7 @@ spec:
     metadata:
       labels:
         app: {{ .Values.global.appName }}
+        is_test: "yes"
     spec:
       containers:
         - name: {{ .Values.global.appName }}
