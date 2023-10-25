@@ -2,4 +2,4 @@ replicaCount: 1
 appName: example-service-1
 image:
   repository: ghcr.io/omermishania/example-service-1
-  tag: main
+  tag: old-architecture
